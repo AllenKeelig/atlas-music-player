@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import CurrentlyPlaying from "./CurrentlyPlaying";
 import Playlist from "./Playlist";
 import LoadingSkeleton from "./LoadingSkeleton";
+import AudioPlayer from "./AudioPlayer"; // <- new component
 import { PlaylistEntry, Song, fetchPlaylist, fetchSongById } from "../lib/api";
 
 export default function MusicPlayer(): JSX.Element {
@@ -14,8 +15,7 @@ export default function MusicPlayer(): JSX.Element {
   const [shuffleEnabled, setShuffleEnabled] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
+  // Load playlist
   useEffect(() => {
     setLoading(true);
     fetchPlaylist()
@@ -27,12 +27,12 @@ export default function MusicPlayer(): JSX.Element {
       .finally(() => setLoading(false));
   }, []);
 
+  // Fetch current song
   useEffect(() => {
     if (!currentTrackId) {
       setCurrentSong(null);
       return;
     }
-
     setLoading(true);
     fetchSongById(currentTrackId)
       .then((s) => setCurrentSong(s))
@@ -43,54 +43,12 @@ export default function MusicPlayer(): JSX.Element {
       .finally(() => setLoading(false));
   }, [currentTrackId]);
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (!currentSong?.song) {
-      audio.pause();
-      audio.src = "";
-      return;
-    }
-
-    audio.src = currentSong.song;
-    audio.load();
-    audio.volume = volume;
-    audio.playbackRate = playbackRate;
-
-    if (isPlaying) {
-      const p = audio.play();
-      if (p) p.catch((e) => console.warn("play failed", e));
-    }
-  }, [currentSong, isPlaying, playbackRate]);
-
-  useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = volume;
-  }, [volume]);
-
-  useEffect(() => {
-    if (audioRef.current) audioRef.current.playbackRate = playbackRate;
-  }, [playbackRate]);
-
   const onSelectTrack = (id: string) => {
     setCurrentTrackId(id);
     setIsPlaying(true);
   };
 
-  const playPause = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (isPlaying) {
-      audio.pause();
-      setIsPlaying(false);
-    } else {
-      const p = audio.play();
-      if (p) p.catch((e) => console.warn("play failed", e));
-      setIsPlaying(true);
-    }
-  };
-
+  const playPause = () => setIsPlaying((prev) => !prev);
   const toggleShuffle = () => setShuffleEnabled((prev) => !prev);
 
   const skip = (dir: 1 | -1) => {
@@ -117,28 +75,26 @@ export default function MusicPlayer(): JSX.Element {
   };
 
   const cycleSpeed = () => {
-    setPlaybackRate((prev) => {
-      if (prev === 0.5) return 1;
-      if (prev === 1) return 2;
-      return 0.5;
-    });
+    setPlaybackRate((prev) => (prev === 0.5 ? 1 : prev === 1 ? 2 : 0.5));
   };
 
   const currentIndex = tracks.findIndex((t) => t.id === currentTrackId);
   const isFirst = currentIndex === 0;
   const isLast = currentIndex === tracks.length - 1;
 
-  if (loading) {
-    return <LoadingSkeleton />;
-  }
+  if (loading) return <LoadingSkeleton />;
 
   return (
     <div className="flex flex-col md:flex-row gap-6 bg-background p-6 rounded-xl">
-      <audio
-        ref={audioRef}
+      {/* AudioPlayer handles all audio logic now */}
+      <AudioPlayer
+        song={currentSong}
+        isPlaying={isPlaying}
+        volume={volume}
+        playbackRate={playbackRate}
         onEnded={() => skip(1)}
-        onPause={() => setIsPlaying(false)}
         onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
       />
 
       <div className="flex-1">
