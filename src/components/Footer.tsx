@@ -1,7 +1,6 @@
 export default function Footer() {
   const year = new Date().getFullYear();
 
-  // Toggle dark mode manually
   const toggleDarkMode = () => {
     document.documentElement.classList.toggle("dark");
   };

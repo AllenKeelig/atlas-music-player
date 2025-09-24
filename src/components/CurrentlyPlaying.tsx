@@ -1,4 +1,3 @@
-// src/components/CurrentlyPlaying.jsx
 import CoverArt from "./CoverArt";
 import SongTitle from "./SongTitle";
 import PlayControls from "./PlayControls";
@@ -14,4 +13,3 @@ export default function CurrentlyPlaying() {
     </div>
   );
 }
-

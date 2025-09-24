@@ -1,4 +1,3 @@
-// src/components/MusicPlayer.jsx
 import CurrentlyPlaying from "./CurrentlyPlaying";
 import Playlist from "./Playlist";
 
@@ -8,7 +7,6 @@ export default function MusicPlayer() {
       <div className="flex-1">
         <CurrentlyPlaying />
       </div>
-
       <div className="flex-1">
         <Playlist />
       </div>
