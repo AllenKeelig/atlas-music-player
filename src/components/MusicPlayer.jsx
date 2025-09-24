@@ -1,15 +1,17 @@
-import CoverArt from "./CoverArt";
-import SongTitle from "./SongTitle"
-import PlayControls from "./PlayControls";
-import VolumeControls from "./VolumeControls";
+// src/components/MusicPlayer.jsx
+import CurrentlyPlaying from "./CurrentlyPlaying";
+import Playlist from "./Playlist";
 
 export default function MusicPlayer() {
   return (
-    <div>
-      <CoverArt></CoverArt>
-      <SongTitle artistName="sample">sample</SongTitle>
-      <PlayControls></PlayControls>
-      <VolumeControls></VolumeControls>
+    <div class="flex flex-col md:flex-row gap-6">
+      <div className="">
+        <CurrentlyPlaying />
+      </div>
+
+      <div className="">
+        <Playlist />
+      </div>
     </div>
   );
 }
