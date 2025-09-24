@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import CurrentlyPlaying from "./CurrentlyPlaying";
 import Playlist from "./Playlist";
+import LoadingSkeleton from "./LoadingSkeleton";
 import { PlaylistEntry, Song, fetchPlaylist, fetchSongById } from "../lib/api";
 
 export default function MusicPlayer(): JSX.Element {
@@ -11,35 +12,37 @@ export default function MusicPlayer(): JSX.Element {
   const [volume, setVolume] = useState<number>(0.8);
   const [playbackRate, setPlaybackRate] = useState<0.5 | 1 | 2>(1);
   const [shuffleEnabled, setShuffleEnabled] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Load playlist on mount
   useEffect(() => {
+    setLoading(true);
     fetchPlaylist()
       .then((list) => {
         setTracks(list);
         if (list.length > 0 && !currentTrackId) setCurrentTrackId(list[0].id);
       })
-      .catch((err) => console.error("Playlist fetch error", err));
+      .catch((err) => console.error("Playlist fetch error", err))
+      .finally(() => setLoading(false));
   }, []);
 
-  // Fetch song details when track changes
   useEffect(() => {
     if (!currentTrackId) {
       setCurrentSong(null);
       return;
     }
 
+    setLoading(true);
     fetchSongById(currentTrackId)
       .then((s) => setCurrentSong(s))
       .catch((err) => {
         console.error("Failed to fetch song details", err);
         setCurrentSong(null);
-      });
+      })
+      .finally(() => setLoading(false));
   }, [currentTrackId]);
 
-  // Sync audio element
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -94,11 +97,10 @@ export default function MusicPlayer(): JSX.Element {
     if (!tracks.length || !currentTrackId) return;
 
     if (shuffleEnabled && dir === 1) {
-      // pick random next song
       let next;
       do {
         next = tracks[Math.floor(Math.random() * tracks.length)].id;
-      } while (next === currentTrackId && tracks.length > 1); // avoid repeating
+      } while (next === currentTrackId && tracks.length > 1);
       setCurrentTrackId(next);
       setIsPlaying(true);
       return;
@@ -108,7 +110,7 @@ export default function MusicPlayer(): JSX.Element {
     if (idx === -1) return;
 
     const next = idx + dir;
-    if (next < 0 || next >= tracks.length) return; // no looping
+    if (next < 0 || next >= tracks.length) return;
 
     setCurrentTrackId(tracks[next].id);
     setIsPlaying(true);
@@ -125,6 +127,10 @@ export default function MusicPlayer(): JSX.Element {
   const currentIndex = tracks.findIndex((t) => t.id === currentTrackId);
   const isFirst = currentIndex === 0;
   const isLast = currentIndex === tracks.length - 1;
+
+  if (loading) {
+    return <LoadingSkeleton />;
+  }
 
   return (
     <div className="flex flex-col md:flex-row gap-6 bg-background p-6 rounded-xl">
