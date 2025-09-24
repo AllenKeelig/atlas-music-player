@@ -8,6 +8,8 @@ type PlayControlsProps = {
   onShuffle: () => void;
   playbackRate: 0.5 | 1 | 2;
   onCycleSpeed: () => void;
+  disablePrev?: boolean; // disable back button if first song
+  disableNext?: boolean; // disable forward button if last song
 };
 
 export default function PlayControls({
@@ -18,6 +20,8 @@ export default function PlayControls({
   onShuffle,
   playbackRate,
   onCycleSpeed,
+  disablePrev = false,
+  disableNext = false,
 }: PlayControlsProps) {
   return (
     <div className="flex gap-3 items-center">
@@ -28,7 +32,13 @@ export default function PlayControls({
         {playbackRate}x
       </button>
 
-      <button onClick={onSkipPrev} className="p-2 rounded-full hover:bg-accent">
+      <button
+        onClick={onSkipPrev}
+        disabled={disablePrev}
+        className={`p-2 rounded-full hover:bg-accent ${
+          disablePrev ? "opacity-50 cursor-not-allowed" : ""
+        }`}
+      >
         <Rewind className="w-6 h-6" />
       </button>
 
@@ -39,7 +49,13 @@ export default function PlayControls({
         {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
       </button>
 
-      <button onClick={onSkipNext} className="p-2 rounded-full hover:bg-accent">
+      <button
+        onClick={onSkipNext}
+        disabled={disableNext}
+        className={`p-2 rounded-full hover:bg-accent ${
+          disableNext ? "opacity-50 cursor-not-allowed" : ""
+        }`}
+      >
         <FastForward className="w-6 h-6" />
       </button>
 

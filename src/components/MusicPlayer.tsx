@@ -87,16 +87,18 @@ export default function MusicPlayer(): JSX.Element {
     }
   };
 
-  const skip = (dir: 1 | -1) => {
-    if (!tracks.length || !currentTrackId) return;
-    const idx = tracks.findIndex((t) => t.id === currentTrackId);
-    if (idx === -1) return;
-    let next = idx + dir;
-    if (next < 0) next = tracks.length - 1;
-    if (next >= tracks.length) next = 0;
-    setCurrentTrackId(tracks[next].id);
-    setIsPlaying(true);
-  };
+const skip = (dir: 1 | -1) => {
+  if (!tracks.length || !currentTrackId) return;
+  const idx = tracks.findIndex((t) => t.id === currentTrackId);
+  if (idx === -1) return;
+  let next = idx + dir;
+
+  // prevent looping
+  if (next < 0 || next >= tracks.length) return;
+
+  setCurrentTrackId(tracks[next].id);
+  setIsPlaying(true);
+};
 
   const shuffle = () => {
     if (!tracks.length) return;
