@@ -6,6 +6,8 @@ type PlayControlsProps = {
   onSkipNext: () => void;
   onSkipPrev: () => void;
   onShuffle: () => void;
+  playbackRate: 0.5 | 1 | 2;
+  onCycleSpeed: () => void;
 };
 
 export default function PlayControls({
@@ -14,12 +16,18 @@ export default function PlayControls({
   onSkipNext,
   onSkipPrev,
   onShuffle,
+  playbackRate,
+  onCycleSpeed,
 }: PlayControlsProps) {
   return (
     <div className="flex gap-3 items-center">
-      <button onClick={() => {}} className="p-2 rounded-full hover:bg-accent">
-        1x
+      <button
+        onClick={onCycleSpeed}
+        className="p-2 rounded-full hover:bg-accent"
+      >
+        {playbackRate}x
       </button>
+
       <button onClick={onSkipPrev} className="p-2 rounded-full hover:bg-accent">
         <Rewind className="w-6 h-6" />
       </button>
@@ -34,6 +42,7 @@ export default function PlayControls({
       <button onClick={onSkipNext} className="p-2 rounded-full hover:bg-accent">
         <FastForward className="w-6 h-6" />
       </button>
+
       <button onClick={onShuffle} className="p-2 rounded-full hover:bg-accent">
         <Shuffle className="w-6 h-6" />
       </button>

@@ -9,6 +9,7 @@ export default function MusicPlayer(): JSX.Element {
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(0.8);
+  const [playbackRate, setPlaybackRate] = useState<0.5 | 1 | 2>(1);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -25,7 +26,7 @@ export default function MusicPlayer(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    // when currentTrackId changes, fetch the full song details (cover + audio url)
+    // when currentTrackId changes, fetch the full song details
     if (!currentTrackId) {
       setCurrentSong(null);
       return;
@@ -53,15 +54,20 @@ export default function MusicPlayer(): JSX.Element {
     audio.src = currentSong.song;
     audio.load();
     audio.volume = volume;
+    audio.playbackRate = playbackRate;
     if (isPlaying) {
       const p = audio.play();
       if (p) p.catch((e) => console.warn("play failed", e));
     }
-  }, [currentSong, isPlaying]);
+  }, [currentSong, isPlaying, playbackRate]);
 
   useEffect(() => {
     if (audioRef.current) audioRef.current.volume = volume;
   }, [volume]);
+
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.playbackRate = playbackRate;
+  }, [playbackRate]);
 
   const onSelectTrack = (id: string) => {
     setCurrentTrackId(id);
@@ -99,6 +105,15 @@ export default function MusicPlayer(): JSX.Element {
     setIsPlaying(true);
   };
 
+  // cycles playback rate 0.5x → 1x → 2x → 0.5x...
+  const cycleSpeed = () => {
+    setPlaybackRate((prev) => {
+      if (prev === 0.5) return 1;
+      if (prev === 1) return 2;
+      return 0.5;
+    });
+  };
+
   return (
     <div className="flex flex-col md:flex-row gap-6 bg-background p-6 rounded-xl">
       <audio
@@ -117,6 +132,8 @@ export default function MusicPlayer(): JSX.Element {
           onShuffle={shuffle}
           volume={volume}
           setVolume={setVolume}
+          playbackRate={playbackRate}
+          onCycleSpeed={cycleSpeed}
         />
       </div>
 

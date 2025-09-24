@@ -13,6 +13,8 @@ type CurrentlyPlayingProps = {
   onShuffle: () => void;
   volume: number;
   setVolume: (v: number) => void;
+  playbackRate: 0.5 | 1 | 2;
+  onCycleSpeed: () => void;
 };
 
 export default function CurrentlyPlaying({
@@ -24,6 +26,8 @@ export default function CurrentlyPlaying({
   onShuffle,
   volume,
   setVolume,
+  playbackRate,
+  onCycleSpeed,
 }: CurrentlyPlayingProps) {
   return (
     <div className="bg-primary text-background rounded-2xl p-6 shadow-md flex flex-col items-center gap-6">
@@ -38,6 +42,8 @@ export default function CurrentlyPlaying({
         onSkipNext={onSkipNext}
         onSkipPrev={onSkipPrev}
         onShuffle={onShuffle}
+        playbackRate={playbackRate}
+        onCycleSpeed={onCycleSpeed}
       />
 
       <VolumeControls volume={volume} setVolume={setVolume} />
