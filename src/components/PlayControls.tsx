@@ -5,11 +5,12 @@ type PlayControlsProps = {
   onPlayPause: () => void;
   onSkipNext: () => void;
   onSkipPrev: () => void;
-  onShuffle: () => void;
+  onToggleShuffle: () => void; // toggle shuffle on/off
+  shuffleEnabled: boolean;       // current shuffle state
   playbackRate: 0.5 | 1 | 2;
   onCycleSpeed: () => void;
-  disablePrev?: boolean; // disable back button if first song
-  disableNext?: boolean; // disable forward button if last song
+  disablePrev?: boolean;
+  disableNext?: boolean;
 };
 
 export default function PlayControls({
@@ -17,7 +18,8 @@ export default function PlayControls({
   onPlayPause,
   onSkipNext,
   onSkipPrev,
-  onShuffle,
+  onToggleShuffle,
+  shuffleEnabled,
   playbackRate,
   onCycleSpeed,
   disablePrev = false,
@@ -51,15 +53,20 @@ export default function PlayControls({
 
       <button
         onClick={onSkipNext}
-        disabled={disableNext}
+        disabled={disableNext && !shuffleEnabled} // allow skipping if shuffle is on
         className={`p-2 rounded-full hover:bg-accent ${
-          disableNext ? "opacity-50 cursor-not-allowed" : ""
+          disableNext && !shuffleEnabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
         <FastForward className="w-6 h-6" />
       </button>
 
-      <button onClick={onShuffle} className="p-2 rounded-full hover:bg-accent">
+      <button
+        onClick={onToggleShuffle}
+        className={`p-2 rounded-full hover:bg-accent ${
+          shuffleEnabled ? "text-accent" : ""
+        }`}
+      >
         <Shuffle className="w-6 h-6" />
       </button>
     </div>

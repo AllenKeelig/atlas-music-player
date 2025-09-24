@@ -10,7 +10,10 @@ type CurrentlyPlayingProps = {
   onPlayPause: () => void;
   onSkipNext: () => void;
   onSkipPrev: () => void;
-  onShuffle: () => void;
+  onToggleShuffle: () => void; // toggle shuffle
+  shuffleEnabled: boolean;      // current shuffle state
+  disablePrev?: boolean;        // disable back button
+  disableNext?: boolean;        // disable forward button
   volume: number;
   setVolume: (v: number) => void;
   playbackRate: 0.5 | 1 | 2;
@@ -23,7 +26,10 @@ export default function CurrentlyPlaying({
   onPlayPause,
   onSkipNext,
   onSkipPrev,
-  onShuffle,
+  onToggleShuffle,
+  shuffleEnabled,
+  disablePrev = false,
+  disableNext = false,
   volume,
   setVolume,
   playbackRate,
@@ -41,7 +47,10 @@ export default function CurrentlyPlaying({
         onPlayPause={onPlayPause}
         onSkipNext={onSkipNext}
         onSkipPrev={onSkipPrev}
-        onShuffle={onShuffle}
+        onToggleShuffle={onToggleShuffle}
+        shuffleEnabled={shuffleEnabled}
+        disablePrev={disablePrev}
+        disableNext={disableNext}
         playbackRate={playbackRate}
         onCycleSpeed={onCycleSpeed}
       />
