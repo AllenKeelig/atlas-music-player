@@ -1,14 +1,131 @@
+import { useEffect, useRef, useState } from "react";
 import CurrentlyPlaying from "./CurrentlyPlaying";
 import Playlist from "./Playlist";
+import { PlaylistEntry, Song, fetchPlaylist, fetchSongById } from "../lib/api";
 
-export default function MusicPlayer() {
+export default function MusicPlayer(): JSX.Element {
+  const [tracks, setTracks] = useState<PlaylistEntry[]>([]);
+  const [currentTrackId, setCurrentTrackId] = useState<string | null>(null);
+  const [currentSong, setCurrentSong] = useState<Song | null>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [volume, setVolume] = useState<number>(0.8);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // load playlist on mount
+    fetchPlaylist()
+      .then((list) => {
+        setTracks(list);
+        if (list.length > 0 && !currentTrackId) {
+          setCurrentTrackId(list[0].id);
+        }
+      })
+      .catch((err) => console.error("Playlist fetch error", err));
+  }, []);
+
+  useEffect(() => {
+    // when currentTrackId changes, fetch the full song details (cover + audio url)
+    if (!currentTrackId) {
+      setCurrentSong(null);
+      return;
+    }
+
+    fetchSongById(currentTrackId)
+      .then((s) => {
+        setCurrentSong(s);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch song details", err);
+        setCurrentSong(null);
+      });
+  }, [currentTrackId]);
+
+  useEffect(() => {
+    // sync audio element when currentSong changes
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (!currentSong?.song) {
+      audio.pause();
+      audio.src = "";
+      return;
+    }
+    audio.src = currentSong.song;
+    audio.load();
+    audio.volume = volume;
+    if (isPlaying) {
+      const p = audio.play();
+      if (p) p.catch((e) => console.warn("play failed", e));
+    }
+  }, [currentSong, isPlaying]);
+
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = volume;
+  }, [volume]);
+
+  const onSelectTrack = (id: string) => {
+    setCurrentTrackId(id);
+    setIsPlaying(true);
+  };
+
+  const playPause = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (isPlaying) {
+      audio.pause();
+      setIsPlaying(false);
+    } else {
+      const p = audio.play();
+      if (p) p.catch((e) => console.warn("play failed", e));
+      setIsPlaying(true);
+    }
+  };
+
+  const skip = (dir: 1 | -1) => {
+    if (!tracks.length || !currentTrackId) return;
+    const idx = tracks.findIndex((t) => t.id === currentTrackId);
+    if (idx === -1) return;
+    let next = idx + dir;
+    if (next < 0) next = tracks.length - 1;
+    if (next >= tracks.length) next = 0;
+    setCurrentTrackId(tracks[next].id);
+    setIsPlaying(true);
+  };
+
+  const shuffle = () => {
+    if (!tracks.length) return;
+    const pick = tracks[Math.floor(Math.random() * tracks.length)];
+    setCurrentTrackId(pick.id);
+    setIsPlaying(true);
+  };
+
   return (
     <div className="flex flex-col md:flex-row gap-6 bg-background p-6 rounded-xl">
+      <audio
+        ref={audioRef}
+        onEnded={() => skip(1)}
+        onPause={() => setIsPlaying(false)}
+        onPlay={() => setIsPlaying(true)}
+      />
       <div className="flex-1">
-        <CurrentlyPlaying />
+        <CurrentlyPlaying
+          song={currentSong}
+          isPlaying={isPlaying}
+          onPlayPause={playPause}
+          onSkipNext={() => skip(1)}
+          onSkipPrev={() => skip(-1)}
+          onShuffle={shuffle}
+          volume={volume}
+          setVolume={setVolume}
+        />
       </div>
+
       <div className="flex-1">
-        <Playlist />
+        <Playlist
+          tracks={tracks}
+          currentTrackId={currentTrackId}
+          onSelectTrack={onSelectTrack}
+        />
       </div>
     </div>
   );

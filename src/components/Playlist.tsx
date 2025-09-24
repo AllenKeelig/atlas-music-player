@@ -1,24 +1,33 @@
+import { PlaylistEntry } from "../lib/api";
 import PlayListItem from "./PlayListItem";
 
-export default function Playlist() {
+type PlaylistProps = {
+  tracks: PlaylistEntry[];
+  currentTrackId: string | null;
+  onSelectTrack: (id: string) => void;
+};
+
+export default function Playlist({ tracks, currentTrackId, onSelectTrack }: PlaylistProps) {
   return (
     <div className="space-y-2 bg-background p-4 rounded-xl">
-      <PlayListItem
-        title="Song A"
-        artist="Artist 1"
-        duration="3:45"
-        isActive
-      />
-      <PlayListItem
-        title="Song B"
-        artist="Artist 2"
-        duration="4:12"
-      />
-      <PlayListItem
-        title="Song C"
-        artist="Artist 3"
-        duration="2:58"
-      />
+      {tracks.map((t) => (
+        <PlayListItem
+          key={t.id}
+          id={t.id}
+          title={t.title}
+          artist={t.artist}
+          duration={formatDuration(t.duration)}
+          isActive={t.id === currentTrackId}
+          onClick={() => onSelectTrack(t.id)}
+        />
+      ))}
     </div>
   );
+}
+
+// helper to format seconds -> mm:ss
+function formatDuration(sec: number): string {
+  const minutes = Math.floor(sec / 60);
+  const seconds = sec % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }

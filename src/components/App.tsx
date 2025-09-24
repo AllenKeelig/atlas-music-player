@@ -1,13 +1,11 @@
-import Footer from "./Footer";
 import MusicPlayer from "./MusicPlayer";
+import Footer from "./Footer";
 
-function App() {
+export default function App(): JSX.Element {
   return (
-    <div>
+    <div className="min-h-screen bg-background text-primary p-6">
       <MusicPlayer />
       <Footer />
     </div>
   );
 }
-
-export default App;
