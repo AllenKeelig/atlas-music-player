@@ -1,0 +1,16 @@
+// src/__tests__/CoverArt.test.tsx
+import { render } from "@testing-library/react";
+import { expect, test } from "vitest";
+import CoverArt from "../components/CoverArt";
+
+test("CoverArt renders with image src and alt", () => {
+  const { container } = render(
+    <CoverArt src="/test.jpg" alt="Test album art" />
+  );
+  expect(container).toMatchSnapshot();
+});
+
+test("CoverArt renders without src (fallback)", () => {
+  const { container } = render(<CoverArt src="" alt="No image" />);
+  expect(container).toMatchSnapshot();
+});

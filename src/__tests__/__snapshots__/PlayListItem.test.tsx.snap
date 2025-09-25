@@ -1,0 +1,51 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PlayListItem renders selected 1`] = `
+<div>
+  <div
+    class="flex items-center justify-between p-3 rounded-lg cursor-pointer bg-background text-primary hover:bg-accent "
+    role="button"
+  >
+    <div>
+      <p
+        class="font-medium"
+      >
+        Test Song
+      </p>
+      <p
+        class="text-sm text-accent"
+      >
+        Test Artist
+      </p>
+    </div>
+    <span
+      class="text-sm"
+    />
+  </div>
+</div>
+`;
+
+exports[`PlayListItem renders unselected 1`] = `
+<div>
+  <div
+    class="flex items-center justify-between p-3 rounded-lg cursor-pointer bg-background text-primary hover:bg-accent "
+    role="button"
+  >
+    <div>
+      <p
+        class="font-medium"
+      >
+        Another Song
+      </p>
+      <p
+        class="text-sm text-accent"
+      >
+        Another Artist
+      </p>
+    </div>
+    <span
+      class="text-sm"
+    />
+  </div>
+</div>
+`;

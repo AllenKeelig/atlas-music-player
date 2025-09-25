@@ -1,0 +1,79 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`VolumeControl renders max volume 1`] = `
+<div>
+  <div
+    class="flex items-center gap-2 mt-4"
+  >
+    <span
+      class="text-sm text-gray-600"
+    >
+      🔈
+    </span>
+    <input
+      class="w-40 accent-black"
+      max="100"
+      min="0"
+      type="range"
+      value="100"
+    />
+    <span
+      class="text-sm text-gray-600"
+    >
+      🔊
+    </span>
+  </div>
+</div>
+`;
+
+exports[`VolumeControl renders muted 1`] = `
+<div>
+  <div
+    class="flex items-center gap-2 mt-4"
+  >
+    <span
+      class="text-sm text-gray-600"
+    >
+      🔈
+    </span>
+    <input
+      class="w-40 accent-black"
+      max="100"
+      min="0"
+      type="range"
+      value="0"
+    />
+    <span
+      class="text-sm text-gray-600"
+    >
+      🔊
+    </span>
+  </div>
+</div>
+`;
+
+exports[`VolumeControl renders with default volume 1`] = `
+<div>
+  <div
+    class="flex items-center gap-2 mt-4"
+  >
+    <span
+      class="text-sm text-gray-600"
+    >
+      🔈
+    </span>
+    <input
+      class="w-40 accent-black"
+      max="100"
+      min="0"
+      type="range"
+      value="50"
+    />
+    <span
+      class="text-sm text-gray-600"
+    >
+      🔊
+    </span>
+  </div>
+</div>
+`;
